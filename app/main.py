@@ -33,6 +33,16 @@ def ping(host: str = Query(...)):
     return {"status": "ok", "exit_code": result}
 
 
+@app.post("/signup")
+def signup(username: str = Form(...), password: str = Form(...)):
+    """User signup endpoint"""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    db.commit()
+    return {"status": "success", "message": "User registered"}
+
 @app.get("/health")
 def health():
     return {"status": "healthy", "version": "1.0.0"}
+
