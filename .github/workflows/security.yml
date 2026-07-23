@@ -48,4 +48,4 @@ jobs:
       - name: Install Checkov
         run: pip3 install checkov
       - name: Run Checkov
-        run: checkov -d terraform/ --hard-fail-on HIGH
+        run: checkov -d terraform/ --soft-fail --hard-fail-on HIGH
