@@ -44,7 +44,7 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
 
       - name: Run gitleaks (working-dir scan)
-        run: gitleaks detect --no-git --source . --verbose
+        run: gitleaks dir --source . --verbose
 
   sca:
     name: SCA - Trivy
