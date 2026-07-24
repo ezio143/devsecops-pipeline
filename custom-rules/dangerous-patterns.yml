@@ -1,0 +1,38 @@
+rules:
+  - id: insecure-deserialization-pickle-loads
+    patterns:
+      - pattern: pickle.loads(...)
+    message: >
+      Insecure deserialization detected. pickle.loads() on untrusted input
+      can lead to arbitrary code execution (CWE-502). Use a safe serialization
+      format like JSON instead.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-502
+      owasp: A08:2021 - Software and Data Integrity Failures
+
+  - id: debug-endpoint-env-exposure
+    patterns:
+      - pattern: dict(os.environ)
+    message: >
+      Environment variables exposed via endpoint. This may leak secrets,
+      API keys, and internal configuration (CWE-200).
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-200
+      owasp: A01:2021 - Broken Access Control
+
+  - id: python-os-command-injection
+    patterns:
+      - pattern: os.system(...)
+    message: >
+      OS command injection detected. Using os.system() with untrusted input
+      can lead to arbitrary command execution (CWE-78). Use subprocess.run()
+      with a list of arguments instead.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-78
+      owasp: A03-2021 - Injection

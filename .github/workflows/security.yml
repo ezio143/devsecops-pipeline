@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: semgrep scan --config auto --error .
+      - run: semgrep scan --config auto --config custom-rules/ --error .
 
   secrets:
     name: Secrets - Gitleaks (Diff Scan)

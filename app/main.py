@@ -1,6 +1,7 @@
 import os
+import pickle
 import sqlite3
-from fastapi import FastAPI, Form, Query
+from fastapi import FastAPI, Form, Query, Request
 
 app = FastAPI()
 
@@ -41,6 +42,22 @@ def signup(username: str = Form(...), password: str = Form(...)):
     cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
     db.commit()
     return {"status": "success", "message": "User registered"}
+
+
+@app.post("/deserialize")
+async def deserialize(request: Request):
+    """Insecure Deserialization - CWE-502"""
+    body = await request.body()
+    # Dangerous: pickle.loads on untrusted input allows arbitrary code execution
+    data = pickle.loads(body)
+    return {"status": "processed", "type": str(type(data))}
+
+
+@app.get("/debug/env")
+def debug_env():
+    """Information Exposure - CWE-200"""
+    # Dangerous: exposes all environment variables including secrets
+    return {"environment": dict(os.environ)}
 
 @app.get("/health")
 def health():
