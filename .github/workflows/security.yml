@@ -14,8 +14,14 @@ jobs:
       image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v6
-      - run: semgrep scan --config auto --error .
-      - run: semgrep scan --config auto --config custom-rules/ --error .
+      - run: semgrep scan --config auto --config custom-rules/ --sarif --output semgrep-results.sarif --error .
+      - name: Upload Raw Semgrep Results as an Artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: semgrep-sarif
+          path: semgrep-results.sarif
+          if-no-files-found: error
 
   secrets:
     name: Secrets - Gitleaks (Diff Scan)
@@ -27,6 +33,15 @@ jobs:
       - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_REPORT_FORMAT: json
+          GITLEAKS_REPORT_PATH: gitleaks-diff-scan-results.json
+      - name: Upload Gitleaks Diff Scan Results as an Artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: gitleaks-diff-scan-results
+          path: gitleaks-diff-scan-results.json
+          if-no-files-found: error
 
   complete_secrets_scan:
     name: Secrets - Gitleaks (Working-dir Scan)
@@ -45,7 +60,15 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
 
       - name: Run gitleaks (working-dir scan)
-        run: gitleaks git . --verbose
+        run: gitleaks git . --verbose --report-format json --report-path gitleaks-working-dir-scan-results.json
+
+      - name: Upload Gitleaks Working-dir Scan Results as an Artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: gitleaks-working-dir-scan-results
+          path: gitleaks-working-dir-scan-results.json
+          if-no-files-found: error
 
   sca:
     name: SCA - Trivy
@@ -59,6 +82,15 @@ jobs:
           scan-ref: .
           exit-code: "1"
           severity: HIGH,CRITICAL
+          format: sarif
+          output: trivy-results.sarif
+      - name: Upload Trivy Scan Results as an Artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: trivy-scan-results
+          path: trivy-results.sarif
+          if-no-files-found: error
 
   iac:
     name: IaC - Checkov
@@ -68,4 +100,11 @@ jobs:
       - name: Install Checkov
         run: pip3 install checkov
       - name: Run Checkov
-        run: checkov -d terraform/
+        run: checkov -d terraform/ -o sarif --output-file-path .
+      - name: Upload Checkov Scan Results as an Artifact
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: checkov-scan-results
+          path: results_sarif.sarif
+          if-no-files-found: error
