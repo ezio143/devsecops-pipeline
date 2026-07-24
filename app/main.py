@@ -9,7 +9,7 @@ DB_USER = "admin"
 DB_PASSWORD = "SuperSecret123!"
 DB_HOST = "prod-db.internal.company.com"
 # Fake AWS key for Gitleaks to detect
-AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7DEMO001"
+AWS_ACCESS_KEY_ID = "AKIAT4LNNNSTZBQVWXYZ"
 
 def get_db():
     return sqlite3.connect(":memory:")
