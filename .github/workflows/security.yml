@@ -33,15 +33,6 @@ jobs:
       - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_REPORT_FORMAT: json
-          GITLEAKS_REPORT_PATH: gitleaks-diff-scan-results.json
-      - name: Upload Gitleaks Diff Scan Results as an Artifact
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: gitleaks-diff-scan-results
-          path: gitleaks-results.sarif
-          if-no-files-found: error
 
   complete_secrets_scan:
     name: Secrets - Gitleaks (Working-dir Scan)
